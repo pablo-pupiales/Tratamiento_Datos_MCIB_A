@@ -1,34 +1,35 @@
+# test.py
+# ------------------------------------------------------------
+# Script de prueba simple para el API que corre en localhost:8080
+# ------------------------------------------------------------
 import requests
-# Importa la librería 'requests', que sirve para hacer solicitudes HTTP (GET, POST, etc.)
-# La usaremos para conectarnos a tu API Flask que corre en localhost:8080
 
+def get_info():
+    # Realiza una consulta GET al endpoint /api/info y devuelve el JSON de respuesta.
+    return requests.get("http://localhost:8080/api/info").json()
 
-def request_info():
-    # Define una función que consulta el endpoint GET /api/info de tu API
-    url = 'http://localhost:8080/api/info'  # URL del endpoint de información
-    response = requests.get(url)            # Realiza una solicitud HTTP GET a esa URL
-    return response.json()                  # Convierte la respuesta (JSON) a un dict de Python y lo devuelve
+def post_sumar(a, b):
+    # Envía un JSON con 'a' y 'b' al endpoint /api/sumar y devuelve el JSON de respuesta.
+    return requests.post("http://localhost:8080/api/sumar",
+                         json={"a": a, "b": b}).json()
 
+def post_multiplicar(a, b):
+    # Envía un JSON con 'a' y 'b' al endpoint /api/multiplicar y devuelve el JSON de respuesta.
+    return requests.post("http://localhost:8080/api/multiplicar",
+                         json={"a": a, "b": b}).json()
 
-def request_sumar(a, b):
-    # Define una función que llama al endpoint POST /api/sumar para sumar dos números
-    url = 'http://localhost:8080/api/sumar'  # URL del endpoint de suma
-    data = {
-        'a': a,  # Primer número que quieres sumar (parámetro 'a' del API)
-        'b': b   # Segundo número que quieres sumar (parámetro 'b' del API)
-        }
-    # Envía una solicitud HTTP POST con el cuerpo en formato JSON.
-    # 'json=data' hace que 'requests' serialice 'data' a JSON y ponga el header Content-Type: application/json
-    response = requests.post(url, json=data)
-    # La API, si todo va bien, responde con un JSON como: {"resultado": 15}
-    return response.json()  # Devuelve ese JSON ya convertido en dict de Python
+def get_cve(cve_id):
+    # Consulta un CVE específico en /api/cve/<cve_id> y devuelve el JSON de respuesta.
+    return requests.get(f"http://localhost:8080/api/cve/{cve_id}").json()
 
+def get_score(cvss):
+    # Consulta la categoría de riesgo a partir de un CVSS en /api/score.
+    return requests.get("http://localhost:8080/api/score",
+                        params={"cvss": cvss}).json()
 
-# Llamamos a la función 'request_sumar' enviando 5 y 10 como argumentos.
-# Esto hará una llamada HTTP POST a tu API en /api/sumar con {"a": 5, "b": 10}
-respuesta = request_sumar(5, 10)
-
-# Imprime en pantalla la respuesta que vino del servidor.
-# Ojo: 'respuesta' aquí es un diccionario. Por ejemplo: {'resultado': 15}
-# Se imprime usando un f-string para incrustar el dict directamente en el texto.
-print(f"Resultado de sumar: {respuesta}")
+if __name__ == "__main__":
+    print("INFO:", get_info())
+    print("SUMAR 7 + 20:", post_sumar(7, 20))
+    print("MULTIPLICAR 7 * 20:", post_multiplicar(7, 20))
+    print("CVE (CVE-2021-44228):", get_cve("CVE-2021-44228"))
+    print("SCORE CVSS=9.8:", get_score(9.8))
